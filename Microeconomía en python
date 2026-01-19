@@ -1,0 +1,154 @@
+# ============================================================
+# MICRO – Mis apuntes en Python
+# Curvas de indiferencia + recta presupuestaria + óptimo
+# Cobb-Douglas + cambio en el precio
+# ============================================================
+
+# Nota mía:
+# Este código lo corro en Colab sin problemas.
+# Si lo corro en Jupyter, también debería funcionar igual.
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# -----------------------------
+# 1) Parámetros del modelo
+# -----------------------------
+# Nota mía:
+# alfa y beta representan mis preferencias.
+# Uso 0.5 y 0.5 porque es el caso típico y más simple.
+# A lo dejo en 1 para no complicar la interpretación.
+
+A = 1
+alfa = 0.5
+beta = 0.5
+
+# Nivel de utilidad que quiero graficar
+U = 100
+
+# Ingreso y precios
+I = 20
+PH = 0.5   # precio de hamburguesas
+PJ = 1.0   # precio de jugos
+
+# Dominio para H
+# Nota mía:
+# Empiezo en 0.1 y no en 0 para evitar errores matemáticos
+n = 200
+H = np.linspace(0.1, 100, n)
+
+
+# ----------------------------------------
+# 2) Curva de indiferencia (U constante)
+# ----------------------------------------
+# Parto de: U = A * H^alfa * J^beta
+# Despejo J para poder graficar
+
+J_U = (U / (A * (H ** alfa))) ** (1 / beta)
+
+
+# --------------------------------
+# 3) Recta presupuestaria
+# ----------------------------------------
+# I = PH*H + PJ*J
+# J = I/PJ - (PH/PJ)*H
+
+J_RP = I / PJ - (PH / PJ) * H
+
+# Nota mía:
+# Para valores grandes de H, J puede salir negativo.
+# Eso no tiene sentido económico, pero no afecta el gráfico.
+
+
+# -----------------------------
+# 4) Óptimo del consumidor
+# -----------------------------
+# Para Cobb-Douglas:
+# H* = (alfa/(alfa+beta)) * (I/PH)
+# J* = (beta/(alfa+beta)) * (I/PJ)
+
+H_star = (alfa / (alfa + beta)) * (I / PH)
+J_star = (beta / (alfa + beta)) * (I / PJ)
+
+U_star = A * (H_star ** alfa) * (J_star ** beta)
+
+print("Óptimo inicial")
+print("H* =", round(H_star, 3))
+print("J* =", round(J_star, 3))
+print("U* =", round(U_star, 3))
+
+
+# -----------------------------
+# 5) Gráfico base
+# -----------------------------
+plt.figure(figsize=(8,5))
+plt.plot(H, J_U, label="Curva de indiferencia")
+plt.plot(H, J_RP, label="Recta presupuestaria")
+
+plt.scatter(H_star, J_star)
+plt.text(H_star, J_star, "  Óptimo", va="center")
+
+plt.xlabel("Hamburguesas (H)")
+plt.ylabel("Jugos (J)")
+plt.xlim(0, 60)
+plt.ylim(0, 30)
+plt.grid(True)
+plt.legend()
+plt.show()
+
+
+# -------------------------------------------------
+# 6) Cambio de precio: sube PH
+# -------------------------------------------------
+# Ahora simulo que el precio de las hamburguesas aumenta
+
+PH2 = 0.6
+J_RP2 = I / PJ - (PH2 / PJ) * H
+
+# Nuevo óptimo
+H_star2 = (alfa / (alfa + beta)) * (I / PH2)
+J_star2 = (beta / (alfa + beta)) * (I / PJ)
+U_star2 = A * (H_star2 ** alfa) * (J_star2 ** beta)
+
+print("\nÓptimo con PH más alto")
+print("H*2 =", round(H_star2, 3))
+print("J*2 =", round(J_star2, 3))
+print("U*2 =", round(U_star2, 3))
+
+
+# Curva de indiferencia que pasa por el nuevo óptimo
+J_U2 = (U_star2 / (A * (H ** alfa))) ** (1 / beta)
+
+
+# -----------------------------
+# 7) Gráfico comparativo
+# -----------------------------
+plt.figure(figsize=(8,5))
+plt.plot(H, J_U, label="Indiferencia inicial")
+plt.plot(H, J_U2, label="Indiferencia final")
+plt.plot(H, J_RP, label="Presupuesto inicial")
+plt.plot(H, J_RP2, label="Presupuesto con PH más alto")
+
+plt.scatter(H_star, J_star)
+plt.text(H_star, J_star, "  Óptimo 1", va="center")
+
+plt.scatter(H_star2, J_star2)
+plt.text(H_star2, J_star2, "  Óptimo 2", va="center")
+
+plt.xlabel("Hamburguesas (H)")
+plt.ylabel("Jugos (J)")
+plt.xlim(0, 60)
+plt.ylim(0, 30)
+plt.grid(True)
+plt.legend()
+plt.show()
+
+
+# ============================================================
+# Apuntes finales míos:
+# - Cuando sube PH, la recta se vuelve más empinada.
+# - Consumo menos hamburguesas (H* baja).
+# - El consumo de jugos no cambia porque PJ e I son iguales.
+# - La utilidad máxima cae (U* final < U* inicial).
+# ============================================================
